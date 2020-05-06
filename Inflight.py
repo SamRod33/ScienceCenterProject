@@ -181,15 +181,16 @@ class spaceship(planet):
 
 def loop(system, saturnV):
     timestep = 1*24*3600
-
     while enroute:
-       saturnV.pendown()
-       for body in system:
+        saturnV.goto(saturnV.xloc*SCALE, saturnV.yloc*SCALE)
+        saturnV.pendown()
+        for body in system:
             body.goto(body.xloc*SCALE, body.yloc*SCALE)
             total_fx = total_fy = 0.0
             fx, fy = saturnV.attraction(body)
             total_fx += fx
             total_fy += fy
+
 
 def enroute(system):
     spaceshipCoord = (s.getX(),s.getY())
@@ -262,8 +263,10 @@ def main():
     saturnV.name = "Saturn V"
     saturnV.penup()
     saturnV.shape('classic')
-    saturnV.color('black')
-    saturnV.shapesize(0.3,0.3,1)
+    saturnV.color('pink')
+    saturnV.shapesize(0.5,0.5,1)
+    saturnV.yloc = (1.01 * AU) *   0.96756
+    saturnV.xloc = (1.01 * AU) *  -0.17522
 
     loop([earth, mars, venus, mercury],saturnV)
 
