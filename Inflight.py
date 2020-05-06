@@ -138,7 +138,7 @@ class spaceship(planet):
         # assert (vy >= 0.0), 'Invalid value for f, f must be greater than 0.0'
         self.fuel = f
 
-    def __init__(self, xCoord, yCoord, alt = 10000.0, ang = 135.0, vel = 5000.0, fuel = float(MASS_FUEL)):
+    def __init__(self, xCoord, yCoord, alt, ang, vel, fuel = float(MASS_FUEL)):
         """
         Intiales a space spaceship
 
@@ -169,6 +169,8 @@ class spaceship(planet):
         self.xVel = vel*math.cos(ang)
         self.yVel = vel*math.cos(ang)
         self.mass = MASS_ROCKET+MASS_FUEL
+        self.alt = 0.0
+        self.ang = 0.0
         planet.__init__(self)
 
     def thrust(self):
@@ -273,7 +275,7 @@ def main():
     mars.yloc = (1 * AU) *  -0.857574644771996
     mars.xloc = (1 * AU) *  -1.320107604952232
 
-    saturnV = spaceship(earth.xloc,earth.yloc)
+    saturnV = spaceship(earth.xloc, earth.yloc, 10000.0, 135.0, 50000.0)      #(x location, y location, initial velocity)
     saturnV.name = "Saturn V"
     saturnV.penup()
     saturnV.shape('classic')
