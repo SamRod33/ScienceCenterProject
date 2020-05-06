@@ -50,7 +50,7 @@ class Rocket:
                 else:
                     break
             except:
-                print("Please provide an actual number")    
+                print("Please provide an actual number")
 
         # Mars
         while True:
@@ -61,7 +61,7 @@ class Rocket:
                 else:
                     break
             except:
-                print("Please provide an actual number")  
+                print("Please provide an actual number")
 
         while True:
             radius_mars = raw_input("\nWhat is the radius of Mars\n    _____ x 10^6 m >>  ")
@@ -72,7 +72,7 @@ class Rocket:
                     break
             except:
                 print("Please provide an actual number")
-        
+
         # Begin Launch
         while True:
             input = raw_input("\nAre you ready to launch?\n   Input Y for yes and N for no. >>  ")
@@ -81,7 +81,7 @@ class Rocket:
             else:
                 print("Launch sequence aborted.")
                 return
-        
+
         print("Initiating launch sequence:")
         for i in range(10,0,-1):
             print(i)
@@ -101,25 +101,25 @@ class Rocket:
         dt : int
             the time between each time step
         """
-        self.student_input()
+        # self.student_input()
 
         nt = int(tmax / dt)
         s, v, a = np.zeros(nt), np.zeros(nt), np.zeros(nt)  # Position, velocity, acceleration
         fg, fd, ft = np.zeros(nt), np.zeros(nt), np.zeros(nt)  # Force gravity, drag, thrust
- 
+
         launch_fuel = self.mass_fuel  # calculate what percent of total fuel used for launch
 
         for i in range(1, nt):
-            
+
             # calculate all relevant forces
             fg[i] = self.force_gravity(altitude=s[i-1])
             fd[i] = self.force_drag(altitude=s[i-1], velocity=v[i-1])
             ft[i] = self.force_thrust(time=i*dt, force_gravity=fg[i], force_drag=fd[i], altitude=s[i-1])
             force = ft[i] - fg[i] - fd[i]
-            
+
             # consumer fuel
             self.consume_fuel(velocity=v[i-1], net_thrust=ft[i-1]-fd[i-1], thrust=ft[i-1], dt=dt)
-            if self.mass_fuel < 0: 
+            if self.mass_fuel < 0:
                 crashed = True
 
             # Begin pitch maneuver between in time interval [160:400] seconds
@@ -290,7 +290,7 @@ class Rocket:
         ax1.plot(x, s / 1000, 'b')
         ax1.set_ylabel('Altitude [km]')
         ax1.set_title('Position vs. Time of Rocket Launch')
-        
+
 
         ax2.plot(x, v / 1000, 'g')
         ax2.set_ylabel('Velocity [km/s]')
@@ -302,25 +302,25 @@ class Rocket:
         ax3.set_title('Acceleration vs. Time of Rocket Launch')
 
         plt.show(block=False)
-        plt.pause(10)
+        plt.pause(1)
         plt.close()
 
-    
-    def hello(self, x, y):
-        """
 
+    def draw(self, x, y):
+        """
+        Plots the rocketships trajectory in space
         """
         # Configure turtle animation
         # window = Screen()
         #  t = Turtle()
 
-        screen = turtle.Screen()
-        screen.setup(500, 500)
-        t = turtle.Turtle()
-        
-        for side in range(4) :
-            t.forward(100)
-            t.left(90)
+
+
+
+        """
+        assert(len(x) == len(y))
+        for x_pos, y_pos in zip(x, y):
+            """
 
         # animate
         # assert(len(x) == len(y))
@@ -329,5 +329,11 @@ class Rocket:
             # left(y[i] - y[i-1])
 
 
-rocket = Rocket()
-rocket.launch(800, 1)
+def main():
+    rocket = Rocket()
+    rocket.launch(800, 1)
+    turtle.setup(500, 500)
+
+
+if __name__ == '__main__':
+    main()
