@@ -28,6 +28,10 @@ class planet(Turtle):
     """
     xloc = yloc = 0.0
     name=''
+    mass = 0.0
+
+    # def __init__(self):
+    #     self.mass = 0
 
 class spaceship(planet):
     """
@@ -87,7 +91,7 @@ class spaceship(planet):
         """
         Returns the x-velocity of the spaceship object
         """
-        return self.vx
+        return self.xVel
 
     def setXVel(self, vx):
         """
@@ -97,14 +101,14 @@ class spaceship(planet):
         Precondtion: vx is a float >=0.0
         """
         assert isinstance(vx, float), 'Invalid type for vx, vx must be a float'
-        assert (vx >= 0.0), 'Invalid value for vx, vx must be greater than 0.0'
+        # assert (vx >= 0.0), 'Invalid value for vx, vx must be greater than 0.0'
         self.xVel = vx
 
     def getYVel(self):
         """
         Returns the y-velocity of the spaceship object
         """
-        return self.vy
+        return self.yVel
 
     def setYVel(self, vy):
         """
@@ -114,7 +118,7 @@ class spaceship(planet):
         Precondtion: vy is a float >=0.0
         """
         assert isinstance(vy, float), 'Invalid type for vy, vy must be a float'
-        assert (vy >= 0.0), 'Invalid value for vy, vy must be greater than 0.0'
+        # assert (vy >= 0.0), 'Invalid value for vy, vy must be greater than 0.0'
         self.yVel = vy
 
     def getFuel(self):
@@ -134,7 +138,7 @@ class spaceship(planet):
         # assert (vy >= 0.0), 'Invalid value for f, f must be greater than 0.0'
         self.fuel = f
 
-    def __init__(self, xCoord, yCoord, alt = 10000.0, ang = 135.0, vel = 30000.0, fuel = float(MASS_FUEL)):
+    def __init__(self, xCoord, yCoord, alt = 10000.0, ang = 135.0, vel = 5000.0, fuel = float(MASS_FUEL)):
         """
         Intiales a space spaceship
 
@@ -162,6 +166,9 @@ class spaceship(planet):
         self.setX(xCoord + math.cos(ang)*alt)
         self.setY(yCoord + math.sin(ang)*alt)
         self.setFuel(fuel)
+        self.xVel = vel*math.cos(ang)
+        self.yVel = vel*math.cos(ang)
+        self.mass = MASS_ROCKET+MASS_FUEL
         planet.__init__(self)
 
     def thrust(self):
@@ -172,7 +179,7 @@ class spaceship(planet):
         ry = other.yloc-self.yloc
         r = math.sqrt((rx**2+ry**2))
 
-        f = GRAVITATIONAL_CONSTANT*((MASS_ROCKET+self.getFuel())*other.mass)/r**2
+        f = GRAVITATIONAL_CONSTANT*(self.mass*other.mass)/r**2
 
         theta = math.atan2(ry,rx)
         fx = math.cos(theta)*f
@@ -184,12 +191,19 @@ def loop(system, saturnV):
     while enroute:
         saturnV.goto(saturnV.xloc*SCALE, saturnV.yloc*SCALE)
         saturnV.pendown()
+        total_fx = total_fy = 0.0
         for body in system:
             body.goto(body.xloc*SCALE, body.yloc*SCALE)
-            total_fx = total_fy = 0.0
             fx, fy = saturnV.attraction(body)
             total_fx += fx
             total_fy += fy
+
+            saturnV.setXVel(saturnV.getXVel()+((total_fx*timestep)/saturnV.mass))
+            saturnV.setYVel(saturnV.getYVel()+((total_fy*timestep)/saturnV.mass))
+
+            saturnV.xloc += saturnV.getXVel()*timestep
+            saturnV.yloc += saturnV.getYVel()*timestep
+            saturnV.goto(saturnV.xloc*SCALE, saturnV.yloc*SCALE)
 
 
 def enroute(system):
@@ -268,7 +282,7 @@ def main():
     saturnV.yloc = (1.01 * AU) *   0.96756
     saturnV.xloc = (1.01 * AU) *  -0.17522
 
-    loop([earth, mars, venus, mercury],saturnV)
+    loop([sun, earth, mars, venus, mercury],saturnV)
 
 
 if __name__ == '__main__':          # The code starts here
