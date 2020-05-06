@@ -63,7 +63,7 @@ class spaceship(planet):
         Precondition: x is a float >= 0.0 & <= 800.0
         """
         assert isinstance(x, float), 'Invalid type for x, x must be a float'
-        # assert (x >= 0.0 and x <= 800.0), 'Invalid value for x, x must be between 0 and 800 inclusive'
+
         self.xloc = x
 
     def getY(self):
@@ -157,10 +157,10 @@ class spaceship(planet):
         assert (ang >= 0.0 and ang <= 360.0), 'Invalid value for alt, alt must be in the range [0.0..360.0]'
 
         assert isinstance(fuel,float), 'Invalid type for fuel, fuel must be a float'
-        assert alt > fuel, 'Invalid value for fuel, fuel must be greater than 0.0'
+        assert fuel > 0.0, 'Invalid value for fuel, fuel must be greater than 0.0'
 
-        self.setX(xCoord + math.cos(angle)*alt)
-        self.setY(yCoord + math.sin(angle)*alt)
+        self.setX(xCoord + math.cos(ang)*alt)
+        self.setY(yCoord + math.sin(ang)*alt)
         self.setFuel(fuel)
         planet.__init__(self)
 
