@@ -1,6 +1,8 @@
 from constants import *
 import matplotlib.pyplot as plt
 import numpy as np
+import turtle
+import time
 
 
 class Rocket:
@@ -14,6 +16,80 @@ class Rocket:
         self.pitch_angle = np.pi / 2
 
 
+    def student_input(self):
+
+        # Instructions
+        print("Please provide all values with at least 3 significant figures.")
+        # Ask about value of G
+        while True:
+            G = raw_input("\nWhat is the value of the gravitational constant?\n   _____ x 10^-11 m^3 k^-1 s^-2 >>  ")
+            try:
+                if abs(float(G) - GRAVITATIONAL_CONSTANT / 10**-11) > ALLOWED_ERROR:
+                    print("Wrong value provided, physical properties malfunctioning. Abort.")
+                else:
+                    break
+            except:
+                print("Please provide an actual number")
+
+        # Earth
+        while True:
+            mass_earth = raw_input("\nWhat is the mass of the Earth?\n    _____ x 10^23 kg >>  ")
+            try:
+                if abs(float(mass_earth) - MASS_EARTH/ 10**23) > ALLOWED_ERROR:
+                    print("Wrong value provided. Earth's orbit unstable. Urgent fix required.")
+                else:
+                    break
+            except:
+                print("Please provide an actual number")
+
+        while True:
+            radius_earth = raw_input("\nWhat is the radius of the Earth?\n    _____ x 10^6 m >>  ")
+            try:
+                if abs(float(radius_earth) - RADIUS_EARTH / 10**6) > ALLOWED_ERROR:
+                    print("Wrong value provided, Earth's orbit unstable. Urgent fix required.")
+                else:
+                    break
+            except:
+                print("Please provide an actual number")    
+
+        # Mars
+        while True:
+            mass_mars = raw_input("\nWhat is the mass of Mars\n    _____ x 10^23 kg >>  ")
+            try:
+                if abs(float(mass_mars) - MASS_MARS / 10**23) > ALLOWED_ERROR:
+                    print("Wrong value provided, Mar's orbit unstable. Urgent fix required.")
+                else:
+                    break
+            except:
+                print("Please provide an actual number")  
+
+        while True:
+            radius_mars = raw_input("\nWhat is the radius of Mars\n    _____ x 10^6 m >>  ")
+            try:
+                if abs(float(radius_mars) - RADIUS_MARS / 10**6) > ALLOWED_ERROR:
+                    print("Wrong value provided, Mar's orbit unstable. Urgent fix required.")
+                else:
+                    break
+            except:
+                print("Please provide an actual number")
+        
+        # Begin Launch
+        while True:
+            input = raw_input("\nAre you ready to launch?\n   Input Y for yes and N for no. >>  ")
+            if input == 'Y':
+                break
+            else:
+                print("Launch sequence aborted.")
+                return
+        
+        print("Initiating launch sequence:")
+        for i in range(10,0,-1):
+            print(i)
+            time.sleep(1)
+
+        print("Blast Off!")
+
+
     def launch(self, tmax, dt):
         """
         Launches the rocket and outputs graph of simulated trajectory
@@ -25,6 +101,8 @@ class Rocket:
         dt : int
             the time between each time step
         """
+        self.student_input()
+
         nt = int(tmax / dt)
         s, v, a = np.zeros(nt), np.zeros(nt), np.zeros(nt)  # Position, velocity, acceleration
         fg, fd, ft = np.zeros(nt), np.zeros(nt), np.zeros(nt)  # Force gravity, drag, thrust
@@ -212,6 +290,7 @@ class Rocket:
         ax1.plot(x, s / 1000, 'b')
         ax1.set_ylabel('Altitude [km]')
         ax1.set_title('Position vs. Time of Rocket Launch')
+        
 
         ax2.plot(x, v / 1000, 'g')
         ax2.set_ylabel('Velocity [km/s]')
@@ -222,7 +301,32 @@ class Rocket:
         ax3.set_xlabel('Time [sec.]')
         ax3.set_title('Acceleration vs. Time of Rocket Launch')
 
-        plt.show()
+        plt.show(block=False)
+        plt.pause(10)
+        plt.close()
+
+    
+    def hello(self, x, y):
+        """
+
+        """
+        # Configure turtle animation
+        # window = Screen()
+        #  t = Turtle()
+
+        screen = turtle.Screen()
+        screen.setup(500, 500)
+        t = turtle.Turtle()
+        
+        for side in range(4) :
+            t.forward(100)
+            t.left(90)
+
+        # animate
+        # assert(len(x) == len(y))
+        # for i in range(1, len(x)):
+            # forward(x[i] - x[i-1])
+            # left(y[i] - y[i-1])
 
 
 rocket = Rocket()
