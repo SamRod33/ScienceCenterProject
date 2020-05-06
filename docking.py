@@ -5,7 +5,6 @@ import math
 #from Inflight import *
 from constants import *
 from Rocket import *
-from launch import *
 
 
 # Equations
