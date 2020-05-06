@@ -157,14 +157,10 @@ class spaceship(planet):
         assert (ang >= 0.0 and ang <= 360.0), 'Invalid value for alt, alt must be in the range [0.0..360.0]'
 
         assert isinstance(fuel,float), 'Invalid type for fuel, fuel must be a float'
-        assert fuel > 0.0, 'Invalid value for fuel, fuel must be greater than 0.0'
-        # Dont think these are necessary since we only use these values in the
-        # init
-        # self.s = alt
-        # self.v = vel
-        # self.a = angle
-        self.setX(xCoord + math.cos(ang)*alt)
-        self.setY(yCoord + math.sin(ang)*alt)
+        assert alt > fuel, 'Invalid value for fuel, fuel must be greater than 0.0'
+
+        self.setX(xCoord + math.cos(angle)*alt)
+        self.setY(yCoord + math.sin(angle)*alt)
         self.setFuel(fuel)
         planet.__init__(self)
 
@@ -186,7 +182,7 @@ class spaceship(planet):
 def loop(system, saturnV):
     timestep = 1*24*3600
 
-    while True:
+    while enroute:
        saturnV.pendown()
        for body in system:
             body.goto(body.xloc*SCALE, body.yloc*SCALE)
@@ -195,8 +191,14 @@ def loop(system, saturnV):
             total_fx += fx
             total_fy += fy
 
-def main():
+def enroute(system):
+    spaceshipCoord = (s.getX(),s.getY())
+    endingCoord = () #Fill in once tested
+    if spaceshipCoord==endingCoord:
+        return False
+    return True
 
+def main():
     turtle.setup(800, 800)          # Set the window size to 800 by 800 pixels
     turtle.bgcolor("black")         # Set up the window with a black background
 
