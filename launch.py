@@ -101,7 +101,7 @@ class Rocket:
         dt : int
             the time between each time step
         """
-        self.student_input()
+        # self.student_input()
 
         nt = int(tmax / dt)
         s, v, a = np.zeros(nt), np.zeros(nt), np.zeros(nt)  # Position, velocity, acceleration
@@ -302,13 +302,13 @@ class Rocket:
         ax3.set_title('Acceleration vs. Time of Rocket Launch')
 
         plt.show(block=False)
-        plt.pause(10)
+        plt.pause(1)
         plt.close()
 
 
-    def hello(self, x, y):
+    def draw(self, x, y):
         """
-
+        Plots the rocketships trajectory in space
         """
         # Configure turtle animation
         # window = Screen()
@@ -329,5 +329,11 @@ class Rocket:
             # left(y[i] - y[i-1])
 
 
-rocket = Rocket()
-rocket.launch(800, 1)
+def main():
+    rocket = Rocket()
+    rocket.launch(800, 1)
+    turtle.setup(500, 500)
+
+
+if __name__ == '__main__':
+    main()
