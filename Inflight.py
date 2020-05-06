@@ -7,6 +7,7 @@ Date: 04/15/20
 
 import turtle
 import launch
+import math
 from constants import *
 from turtle import *
 
@@ -28,7 +29,7 @@ class planet(Turtle):
     xloc = yloc = 0.0
     name=''
 
-class spaceship(launch.Rocket,planet):
+class spaceship(planet):
     """
     Class to represent a spaceship
     """
@@ -62,7 +63,7 @@ class spaceship(launch.Rocket,planet):
         Precondition: x is a float >= 0.0 & <= 800.0
         """
         assert isinstance(x, float), 'Invalid type for x, x must be a float'
-        assert (x >= 0.0 and x <= 800.0), 'Invalid value for x, x must be between 0 and 800 inclusive'
+        # assert (x >= 0.0 and x <= 800.0), 'Invalid value for x, x must be between 0 and 800 inclusive'
         self.xloc = x
 
     def getY(self):
@@ -79,7 +80,7 @@ class spaceship(launch.Rocket,planet):
         Precondition: y is a float >= 0.0 & <= 800.0
         """
         assert isinstance(y, float), 'Invalid type for y, y must be a float'
-        assert (y >= 0.0 and y <= 800.0), 'Invalid value for y, y must be between 0 and 800 inclusive'
+        # assert (y >= 0.0 and y <= 800.0), 'Invalid value for y, y must be between 0 and 800 inclusive'
         self.yloc = y
 
     def getXVel(self):
@@ -130,10 +131,10 @@ class spaceship(launch.Rocket,planet):
         Precondition: f is a float >=0.0
         """
         assert isinstance(f, float), 'Invalid type for f, f must be a float'
-        assert (vy >= 0.0), 'Invalid value for f, f must be greater than 0.0'
+        # assert (vy >= 0.0), 'Invalid value for f, f must be greater than 0.0'
         self.fuel = f
 
-    def __init__(self, alt, vel, angle, fuel, xCoord, yCoord):
+    def __init__(self, xCoord, yCoord, alt = 10000.0, ang = 135.0, vel = 30000.0, fuel = float(MASS_FUEL)):
         """
         Intiales a space spaceship
 
@@ -156,17 +157,16 @@ class spaceship(launch.Rocket,planet):
         assert (ang >= 0.0 and ang <= 360.0), 'Invalid value for alt, alt must be in the range [0.0..360.0]'
 
         assert isinstance(fuel,float), 'Invalid type for fuel, fuel must be a float'
-        assert alt > fuel, 'Invalid value for fuel, fuel must be greater than 0.0'
+        assert fuel > 0.0, 'Invalid value for fuel, fuel must be greater than 0.0'
         # Dont think these are necessary since we only use these values in the
         # init
         # self.s = alt
         # self.v = vel
         # self.a = angle
-        self.setX(xCoord + math.cos(angle)*alt)
-        self.setY(yCoord + math.sin(angle)*alt)
+        self.setX(xCoord + math.cos(ang)*alt)
+        self.setY(yCoord + math.sin(ang)*alt)
         self.setFuel(fuel)
         planet.__init__(self)
-        launch.Rocket.__init__(self)
 
     def thrust(self):
         self.vx=AU * -0.02 / 86400
@@ -183,17 +183,17 @@ class spaceship(launch.Rocket,planet):
         fy = math.sin(theta)*f
         return fx,fy
 
-def loop(system):
+def loop(system, saturnV):
     timestep = 1*24*3600
 
     while True:
        saturnV.pendown()
        for body in system:
-           body.goto(body.xloc*SCALE, body.yloc*SCALE)
-        total_fx = total_fy = 0.0
-        fx, fy = saturnV.attraction(body)
-        total_fx += fx
-        total_fy += fy
+            body.goto(body.xloc*SCALE, body.yloc*SCALE)
+            total_fx = total_fy = 0.0
+            fx, fy = saturnV.attraction(body)
+            total_fx += fx
+            total_fy += fy
 
 def main():
 
@@ -256,14 +256,14 @@ def main():
     mars.yloc = (1 * AU) *  -0.857574644771996
     mars.xloc = (1 * AU) *  -1.320107604952232
 
-    saturnV = spaceship(launch.rocket.s,launch.rocket.b,launch.rocket.a,earth.xloc,earth.yloc)
+    saturnV = spaceship(earth.xloc,earth.yloc)
     saturnV.name = "Saturn V"
     saturnV.penup()
     saturnV.shape('classic')
     saturnV.color('black')
     saturnV.shapesize(0.3,0.3,1)
 
-    loop([earth, mars, venus, mercury])
+    loop([earth, mars, venus, mercury],saturnV)
 
 
 if __name__ == '__main__':          # The code starts here
