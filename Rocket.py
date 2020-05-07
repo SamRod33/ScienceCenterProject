@@ -3,6 +3,7 @@
 from constants import *
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.animation import FuncAnimation
 
 class Rocket:
 
@@ -225,17 +226,40 @@ class Rocket:
         f.tight_layout(pad=3.0)
         x = np.arange(0,nt+dt,dt)
 
-        ax1.plot(x, s, 'b')
+        x_data = []
+        y_data = []
+        v_data = []
+        a_data = []
+
+
+        pos, = ax1.plot(x, s, 'b')
         ax1.set_ylabel('Altitude')
         ax1.set_title('Position vs. Time of Rocket Launch')
 
-        ax2.plot(x, v, 'g')
+        vel, = ax2.plot(x, v, 'g')
         ax2.set_ylabel('Velocity')
         ax2.set_title('Velocity vs. Time of Rocket Launch')
 
-        ax3.plot(x, a, 'r')
+        accel, = ax3.plot(x, a, 'r')
         ax3.set_ylabel('Acceleration')
         ax3.set_xlabel('Time (sec.)')
         ax3.set_title('Acceleration vs. Time of Rocket Launch')
 
+        def animate(i):
+            x_data.append(x[i])
+            y_data.append(s[i])
+            v_data.append(v[i])
+            a_data.append(a[i])
+
+            pos.set_xdata(x_data)
+            pos.set_ydata(y_data)
+
+            vel.set_xdata(x_data)
+            vel.set_ydata(v_data)
+
+            accel.set_xdata(x_data)
+            accel.set_ydata(a_data)
+
+
+        animation = FuncAnimation(f, func=animate, frames=len(s), interval=10)
         plt.show()
