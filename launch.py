@@ -1,7 +1,6 @@
 from constants import *
 import matplotlib.pyplot as plt
 import numpy as np
-import turtle
 import time
 
 
@@ -138,7 +137,7 @@ class Rocket:
                 s[i] = s[i-1]
                 break
 
-        self.visualize(s, v, a, i, dt, fg, fd, ft)
+        return s, v, a, i, dt, fg, fd, ft
 
 
     def consume_fuel(self, velocity, net_thrust, thrust, dt):
@@ -263,77 +262,65 @@ class Rocket:
         return [GRAVITATIONAL_CONSTANT * MASS_EARTH / (RADIUS_EARTH + altitude)**2 for altitude in s]
 
 
-    def visualize(self, s, v, a, nt, dt, fg, fd, ft):
-        """
-        Parameters
-        ----------
-        s : list
-            the position of the rocket
-        v : list
-            the velocity of the rocket
-        a : list
-            the acceleration of the rocket
-        nt : int
-            the number of time steps
-        dt : int
-            the time between each time step
-        fg : list
-            the force of gravity at eaach time step
-        """
-        if not self.in_orbit:
-            s, v, a, fg, fd, ft = map(lambda x: np.trim_zeros(x, 'b'), [s, v, a, fg, fd, ft])
+# Launch Rocket
+rocket = Rocket()
+s, v, a, i, dt, fg, fd, ft = rocket.launch(800, 1)
 
-        f, (ax1, ax2, ax3) = plt.subplots(3, sharex=True, figsize=(8,8))
-        f.tight_layout(pad=3.0)
-        x = np.arange(0, int(len(s)*dt), dt)
+# -----------------
+#    VISUALIZE
+# -----------------
 
-        ax1.plot(x, s / 1000, 'b')
-        ax1.set_ylabel('Altitude [km]')
-        ax1.set_title('Position vs. Time of Rocket Launch')
+# Set up subplots
+f, axs = plt.subplots(nrows=3, ncols=2, sharex=True, figsize=(14,9))
+f.tight_layout(pad=3.0)
+f.set_facecolor('w')
 
+# Set up common axis and title names
+f.text(0.5, 0.02, 'Time After Launch [sec.]', ha='center', fontsize=14)
+f.text(0.5, 0.96, 'Modeling a Rocket Launch', ha='center', fontsize=16)
 
-        ax2.plot(x, v / 1000, 'g')
-        ax2.set_ylabel('Velocity [km/s]')
-        ax2.set_title('Velocity vs. Time of Rocket Launch')
+# Set up individual axis titles
+axs[0,0].set_ylabel('Altitude [km]')
+axs[0,0].set_title('Position vs. Time')
 
-        ax3.plot(x, a / self.calculate_g(s), 'r')
-        ax3.set_ylabel('G Force')
-        ax3.set_xlabel('Time [sec.]')
-        ax3.set_title('Acceleration vs. Time of Rocket Launch')
+axs[1,0].set_ylabel('Velocity [km/s]')
+axs[1,0].set_title('Velocity vs. Time')
 
-        plt.show(block=False)
-        plt.pause(1)
-        plt.close()
+axs[2,0].set_ylabel('G Force')
+axs[2,0].set_title('Acceleration vs. Time')
 
+axs[0,1].set_ylabel('Force Gravity [kN]')
+axs[0,1].set_title('Force Gravity vs. Time')
 
-    def draw(self, x, y):
-        """
-        Plots the rocketships trajectory in space
-        """
-        # Configure turtle animation
-        # window = Screen()
-        #  t = Turtle()
+axs[1,1].set_ylabel('Force Drag [kN]')
+axs[1,1].set_title('Force Drag vs. Time')
 
+axs[2,1].set_ylabel('Force Thrust [kN]')
+axs[2,1].set_title('Force Thrust vs. Time')
 
+# Remove trailing 0s if rocket reached terminal velocity by tmax
+if not rocket.in_orbit:
+    s, v, a, fg, fd, ft = map(lambda x: np.trim_zeros(x, 'b'), [s, v, a, fg, fd, ft])
 
+# Calculate common x values and g forces throughout launch
+x = np.arange(0, int(len(s)*dt), dt)
+gs = rocket.calculate_g(s)
 
-        """
-        assert(len(x) == len(y))
-        for x_pos, y_pos in zip(x, y):
-            """
+# Combine data from launch into only a few variables
+axes = [axs[0,0], axs[1,0], axs[2,0], axs[0,1], axs[1,1], axs[2,1]]
+data = [s, v, a, fg, fd, ft]
+scale_factors = [1000, 1000, np.amax(gs), 1000, 1000, 1000]
+colors = ['b', 'g', 'r', 'c', 'm', 'k']
 
-        # animate
-        # assert(len(x) == len(y))
-        # for i in range(1, len(x)):
-            # forward(x[i] - x[i-1])
-            # left(y[i] - y[i-1])
+# Set the x and y axis values for each subplot
+for ax, d, sf in zip(axes, data, scale_factors):
+    ax.set_ylim(0, 1.3 * np.amax(d) / sf)
+    ax.set_xlim(0, np.amax(x))
 
+# Pseudo-animate the launch
+for i in range(0, len(x)):
+    for ax, d, sf, color in zip(axes, data, [1000, 1000, gs[:i], 1000, 1000, 1000], colors):
+        ax.plot(x[:i], d[:i] / sf, color)
+    plt.pause(0.001)
 
-def main():
-    rocket = Rocket()
-    rocket.launch(800, 1)
-    turtle.setup(500, 500)
-
-
-if __name__ == '__main__':
-    main()
+plt.show()
