@@ -2,7 +2,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import math
-from Inflight import *
+#from Inflight import *
 from constants import *
 from Rocket import *
 
@@ -59,25 +59,28 @@ dt = 1 # day
 tmax = 500 # days
 timestep = int(tmax/dt)
 
-m = [rocket.getMass() + rocket.getFuel()]
-y = [rocket.getY()]
-v = [rocket.getVelocity()]
-a = [rocket.getAcceleration()]
-time = [0]
+
+m,y,v,a,time= np.zeros(timestep), np.zeros(timestep), np.zeros(timestep), np.zeros(timestep),np.zeros(timestep)
+
+m[0] = rocket.getMass() + rocket.getFuel()
+y[0] = rocket.getY()
+v[0] = rocket.getVelocity()
+a[0] = rocket.getAcceleration()
+time[0] =  0
 
 ifinal = -1
 for i in range(1, timestep):
     dm = rocket.getThrust()/v_ex
     if m[i-1] >= rocket.getMass():
-        m.append(m[i-1] + dm * dt)
+        m[i]=(m[i-1] + dm * dt)
         rocket.setFuel(rocket.getFuel() + dm)
     else:
-        m.append(m[i-1])
+        m[i]=(m[i-1])
         rocket.setThrust(0)
-    a.append(a[i-1] - accel_grav(y[i-1]) + rocket.getThrust() / m[i-1])
-    v.append(v[i-1] + a[i-1] * dt)
-    y.append(y[i-1] + v[i-1] * dt)
-    time.append(time[i-1] + dt)
+    a[i]=(a[i-1] - accel_grav(y[i-1]) + rocket.getThrust() / m[i-1])
+    v[i]=(v[i-1] + a[i-1] * dt)
+    y[i]=(y[i-1] + v[i-1] * dt)
+    time[i]=(time[i-1] + dt)
     if y[i-1] <=0:
         break
 

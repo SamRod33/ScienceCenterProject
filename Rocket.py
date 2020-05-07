@@ -207,6 +207,17 @@ class Rocket:
             p = 22.65 * np.exp(1.73 - 0.000157*altitude)
         return p / (0.2869 * (T + 273.1))
 
+    def calculate_g(self, s):
+        """
+        Generate a list of values of G
+
+        Parameters
+        ----------
+        s : list
+            the altitude of rocket at each time step
+        """
+        return s
+
     def visualize(self, s, v, a, nt, dt):
         """
         Parameters
@@ -222,44 +233,88 @@ class Rocket:
         dt : int
             the time between each time step
         """
-        f, (ax1, ax2, ax3) = plt.subplots(3, sharex=True, figsize=(8,8))
+        # f, (ax1, ax2, ax3) = plt.subplots(3, sharex=True, figsize=(8,8))
+        # f.tight_layout(pad=3.0)
+        # x = np.arange(0,nt+dt,dt)
+        #
+        # x_data = []
+        # y_data = []
+        # v_data = []
+        # a_data = []
+        #
+        #
+        # pos, = ax1.plot(x, s, 'b')
+        # ax1.set_ylabel('Altitude')
+        # ax1.set_title('Position vs. Time of Rocket Launch')
+        #
+        # vel, = ax2.plot(x, v, 'g')
+        # ax2.set_ylabel('Velocity')
+        # ax2.set_title('Velocity vs. Time of Rocket Launch')
+        #
+        # accel, = ax3.plot(x, a, 'r')
+        # ax3.set_ylabel('Acceleration')
+        # ax3.set_xlabel('Time (sec.)')
+        # ax3.set_title('Acceleration vs. Time of Rocket Launch')
+        #
+        # def animate(i):
+        #     x_data.append(x[i])
+        #     y_data.append(s[i])
+        #     v_data.append(v[i])
+        #     a_data.append(a[i])
+        #
+        #     pos.set_xdata(x_data)
+        #     pos.set_ydata(y_data)
+        #
+        #     vel.set_xdata(x_data)
+        #     vel.set_ydata(v_data)
+        #
+        #     accel.set_xdata(x_data)
+        #     accel.set_ydata(a_data)
+        #
+        #
+        # animation = FuncAnimation(f, func=animate, frames=len(s), interval=10)
+        # Set up subplots
+        f, axs = plt.subplots(nrows=3, ncols=2, sharex=True, figsize=(14,9))
         f.tight_layout(pad=3.0)
-        x = np.arange(0,nt+dt,dt)
+        f.set_facecolor('w')
 
-        x_data = []
-        y_data = []
-        v_data = []
-        a_data = []
+        # Set up common axis and title names
+        f.text(0.5, 0.02, 'Time After Launch [sec.]', ha='center', fontsize=14)
+        f.text(0.5, 0.96, 'Modeling a Rocket Launch', ha='center', fontsize=16)
 
+        # Set up individual axis titles
+        axs[0,0].set_ylabel('Altitude [km]')
+        axs[0,0].set_title('Position vs. Time')
 
-        pos, = ax1.plot(x, s, 'b')
-        ax1.set_ylabel('Altitude')
-        ax1.set_title('Position vs. Time of Rocket Launch')
+        axs[1,0].set_ylabel('Velocity [km/s]')
+        axs[1,0].set_title('Velocity vs. Time')
 
-        vel, = ax2.plot(x, v, 'g')
-        ax2.set_ylabel('Velocity')
-        ax2.set_title('Velocity vs. Time of Rocket Launch')
-
-        accel, = ax3.plot(x, a, 'r')
-        ax3.set_ylabel('Acceleration')
-        ax3.set_xlabel('Time (sec.)')
-        ax3.set_title('Acceleration vs. Time of Rocket Launch')
-
-        def animate(i):
-            x_data.append(x[i])
-            y_data.append(s[i])
-            v_data.append(v[i])
-            a_data.append(a[i])
-
-            pos.set_xdata(x_data)
-            pos.set_ydata(y_data)
-
-            vel.set_xdata(x_data)
-            vel.set_ydata(v_data)
-
-            accel.set_xdata(x_data)
-            accel.set_ydata(a_data)
+        axs[2,0].set_ylabel('G Force')
+        axs[2,0].set_title('Acceleration vs. Time')
 
 
-        animation = FuncAnimation(f, func=animate, frames=len(s), interval=10)
+        # Remove trailing 0s if rocket reached terminal velocity by tmax
+        if s[-1] <= 0:
+            s, v, a = map(lambda x: np.trim_zeros(x, 'b'), [s, v, a])
+
+        # Calculate common x values and g forces throughout launch
+        x = np.arange(0, int(len(s)*dt), dt)
+        gs = self.calculate_g(a)
+
+        # Combine data from launch into only a few variables
+        axes = [axs[0,0], axs[1,0], axs[2,0]]
+        data = [s, v, a]
+        scale_factors = [1000, 1000, 1]
+        colors = ['b', 'g', 'r']
+
+        # Set the x and y axis values for each subplot
+        for ax, d, sf in zip(axes, data, scale_factors):
+            ax.set_ylim(0, 1.3 * np.amax(d) / sf)
+            ax.set_xlim(0, np.amax(x))
+
+        # Pseudo-animate the launch
+        for i in range(0, len(x)):
+            for ax, d, sf, color in zip(axes, data, [1000, 1000, 1  ], colors):
+                ax.plot(x[:i], d[:i] / sf, color)
+            plt.pause(0.001)
         plt.show()
