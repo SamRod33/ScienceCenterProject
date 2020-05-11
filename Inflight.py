@@ -217,8 +217,9 @@ def loop(system, saturnV, mars):
 
 
 def enroute(saturnV, mars):
+    #Checks if the rocket has reached mars yet
+    #Return False if the rocket has reached mars, and return true otherwise
     spaceshipCoord = (saturnV.getX(),saturnV.getY())
-    print(spaceshipCoord)
     endingCoord = (mars.getX(), mars.getY())
     rx = spaceshipCoord[0] - endingCoord[0]
     ry = spaceshipCoord[1] - endingCoord[1]
@@ -227,37 +228,51 @@ def enroute(saturnV, mars):
     if (r < 50):
         return False
     return True
+
+
 def offScreen(saturnV):
+    #check if the rocket is offscreen
+    #return true if the rocket is too far offscreen, and return false otherwise
     spaceshipCoord = (saturnV.getX(),saturnV.getY())
-    if abs(spaceshipCoord[0]>4*10**11 or abs(spaceshipCoord[1])>4*10**11):
+    print (spaceshipCoord)
+    if (abs(spaceshipCoord[0])>4*10**11 or abs(spaceshipCoord[1])>4*10**11):
         return True
     else:
         return False
 
-def main():
+
+def askUser():
+    #asks the user for the escape angle and escape velocity
+    #escape angle must be an integer. Escape angle is the angle at which the rocket is leaving the Earth
+    #escape velocity must be an integer greater than 4000. Escape velocity is the velocity the rocket leaves the Earth at
     askingUser = True
-    while(askingUser):
+    while (askingUser):         #ask the user for the angle at which the rocket will escape the Earth
         spaceshipAngleInput = input(
             "At what angle (in degrees) do you want the rocket to leave Earth? (Directly to the right is 0, and the angles increase counterclockwise from there): ")
-        try:
+        try:                    #if the input can't be converted into an integer, ask the user again
             spaceshipAngle = int(spaceshipAngleInput)
         except:
             print("I couldn't understand your input. Please be sure to input a number.")
         else:
             askingUser = False
     askingUser = True
-    while(askingUser):
+    while (askingUser):         #ask the user for the velocity the rocket will escape the Earth at (must be at least 4000 m/s)
         spaceshipVelocityInput = input(
             "At what velocity do you want the rocket to leave Earth? (Hint: a velocity of at least 4000 m/s is rquired to escape Earth) ")
-        try:
+        try:                    #try to convert the user input into an integer. If it can't be converted, ask again.
             spaceshipVelocity = int(spaceshipVelocityInput)
         except:
             print("I couldn't understand your input. Please be sure to input a number.")
-        else:
-            if (spaceshipVelocity<4000):
+        else:                   #if the value CAN be converted into an integer, check to make sure it's greater than 4000 m/s. Else, ask the user again.
+            if (spaceshipVelocity < 4000):
                 print("The velocity wasn't fast enough, please try inputting a faster velocity.")
             else:
                 askingUser = False
+    return (spaceshipAngle,spaceshipVelocity)
+
+
+def main():
+    (spaceshipAngle, spaceshipVelocity) = askUser()     #ask the user for an angle to escape the Earth at, and a velocity to escape the Earth with.
 
     turtle.setup(800, 800)          # Set the window size to 800 by 800 pixels
     turtle.bgcolor("black")         # Set up the window with a black background
@@ -318,7 +333,7 @@ def main():
     mars.yloc = (1 * AU) *  -0.857574644771996
     mars.xloc = (1 * AU) *  -1.320107604952232
 
-    saturnV = spaceship(earth.xloc, earth.yloc, 200.0, float(spaceshipAngle), float(spaceshipVelocity))      #(x location, y location, altitude, angle, velocity)
+    saturnV = spaceship(earth.xloc, earth.yloc, 200.0, float(spaceshipAngle), float(spaceshipVelocity))      #(x location, y location, altitude, angle, velocity, fuel)
     saturnV.name = "Saturn V"
     saturnV.penup()
     saturnV.shape('classic')
@@ -327,8 +342,8 @@ def main():
     saturnV.yloc = (1.01 * AU) *   0.96756
     saturnV.xloc = (1.01 * AU) *  -0.17522
 
-    loop([sun, earth, mars, venus, mercury],saturnV,mars)
+    loop([sun, earth, mars, venus, mercury],saturnV,mars)       #(solar system, spaceship, target)
 
 
 if __name__ == '__main__':          # The code starts here
-    main()                          # Goes to the function called main (line 82)
+    main()                          # Goes to the function called main (line 274)
