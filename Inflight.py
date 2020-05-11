@@ -234,7 +234,6 @@ def offScreen(saturnV):
     #check if the rocket is offscreen
     #return true if the rocket is too far offscreen, and return false otherwise
     spaceshipCoord = (saturnV.getX(),saturnV.getY())
-    print (spaceshipCoord)
     if (abs(spaceshipCoord[0])>4*10**11 or abs(spaceshipCoord[1])>4*10**11):
         return True
     else:
