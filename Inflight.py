@@ -1,7 +1,7 @@
 """
 Science Center Project: Inflight Portion
 
-Authors: Callen Reid, Ashley Fan, Cher Xu, Efrain Munoz
+Authors: Callen Reid, Efrain Munoz, Cameron Russell, Samuel Rodriguez, Akshay Yadava
 Date: 04/15/20
 """
 
@@ -171,7 +171,7 @@ class spaceship(planet):
         self.setY(yCoord + math.sin(ang)*alt)
         self.setFuel(fuel)
         self.xVel = vel*math.cos(ang)
-        self.yVel = vel*math.cos(ang)
+        self.yVel = vel*math.sin(ang)
         self.mass = MASS_ROCKET+MASS_FUEL
         self.alt = 0.0
         self.ang = 0.0
@@ -225,7 +225,7 @@ def enroute(saturnV, mars):
     ry = spaceshipCoord[1] - endingCoord[1]
     r = math.sqrt(rx**2+ry**2)*SCALE
 
-    if (r < 50):
+    if (r < 40):
         return False
     return True
 
@@ -253,6 +253,7 @@ def askUser():
         except:
             print("I couldn't understand your input. Please be sure to input a number.")
         else:
+            spaceshipAngle = spaceshipAngle*math.pi/180
             askingUser = False
     askingUser = True
     while (askingUser):         #ask the user for the velocity the rocket will escape the Earth at (must be at least 4000 m/s)
