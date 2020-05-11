@@ -30,8 +30,11 @@ class planet(Turtle):
     name=''
     mass = 0.0
 
-    # def __init__(self):
-    #     self.mass = 0
+    def getX(self):
+        return self.xloc
+
+    def getY(self):
+        return self.yloc
 
 class spaceship(planet):
     """
@@ -142,6 +145,7 @@ class spaceship(planet):
         """
         Intiales a space spaceship
 
+
         Parameter alt: The initial altitude of the rocket w.r.t Earth
         Precondition: alt is a float > 0.0
 
@@ -186,11 +190,13 @@ class spaceship(planet):
         theta = math.atan2(ry,rx)
         fx = math.cos(theta)*f
         fy = math.sin(theta)*f
+
         return fx,fy
 
-def loop(system, saturnV):
+def loop(system, saturnV, mars):
     timestep = 1*24*3600
-    while enroute:
+    elapsedRuns = 0
+    while enroute(saturnV, mars) and not offScreen(saturnV) and elapsedRuns < 500:      #stop the simulation if the spaceship reaches Mars, if the spaceship goes too far off screen, or if the simulation takes too long
         saturnV.goto(saturnV.xloc*SCALE, saturnV.yloc*SCALE)
         saturnV.pendown()
         total_fx = total_fy = 0.0
@@ -207,15 +213,52 @@ def loop(system, saturnV):
             saturnV.yloc += saturnV.getYVel()*timestep
             saturnV.goto(saturnV.xloc*SCALE, saturnV.yloc*SCALE)
 
+            elapsedRuns += 1
 
-def enroute(system):
-    spaceshipCoord = (s.getX(),s.getY())
-    endingCoord = () #Fill in once tested
-    if spaceshipCoord==endingCoord:
+
+def enroute(saturnV, mars):
+    spaceshipCoord = (saturnV.getX(),saturnV.getY())
+    print(spaceshipCoord)
+    endingCoord = (mars.getX(), mars.getY())
+    rx = spaceshipCoord[0] - endingCoord[0]
+    ry = spaceshipCoord[1] - endingCoord[1]
+    r = math.sqrt(rx**2+ry**2)*SCALE
+
+    if (r < 50):
         return False
     return True
+def offScreen(saturnV):
+    spaceshipCoord = (saturnV.getX(),saturnV.getY())
+    if abs(spaceshipCoord[0]>4*10**11 or abs(spaceshipCoord[1])>4*10**11):
+        return True
+    else:
+        return False
 
 def main():
+    askingUser = True
+    while(askingUser):
+        spaceshipAngleInput = input(
+            "At what angle (in degrees) do you want the rocket to leave Earth? (Directly to the right is 0, and the angles increase counterclockwise from there): ")
+        try:
+            spaceshipAngle = int(spaceshipAngleInput)
+        except:
+            print("I couldn't understand your input. Please be sure to input a number.")
+        else:
+            askingUser = False
+    askingUser = True
+    while(askingUser):
+        spaceshipVelocityInput = input(
+            "At what velocity do you want the rocket to leave Earth? (Hint: a velocity of at least 4000 m/s is rquired to escape Earth) ")
+        try:
+            spaceshipVelocity = int(spaceshipVelocityInput)
+        except:
+            print("I couldn't understand your input. Please be sure to input a number.")
+        else:
+            if (spaceshipVelocity<4000):
+                print("The velocity wasn't fast enough, please try inputting a faster velocity.")
+            else:
+                askingUser = False
+
     turtle.setup(800, 800)          # Set the window size to 800 by 800 pixels
     turtle.bgcolor("black")         # Set up the window with a black background
 
@@ -275,7 +318,7 @@ def main():
     mars.yloc = (1 * AU) *  -0.857574644771996
     mars.xloc = (1 * AU) *  -1.320107604952232
 
-    saturnV = spaceship(earth.xloc, earth.yloc, 10000.0, 135.0, 50000.0)      #(x location, y location, initial velocity)
+    saturnV = spaceship(earth.xloc, earth.yloc, 200.0, float(spaceshipAngle), float(spaceshipVelocity))      #(x location, y location, altitude, angle, velocity)
     saturnV.name = "Saturn V"
     saturnV.penup()
     saturnV.shape('classic')
@@ -284,7 +327,7 @@ def main():
     saturnV.yloc = (1.01 * AU) *   0.96756
     saturnV.xloc = (1.01 * AU) *  -0.17522
 
-    loop([sun, earth, mars, venus, mercury],saturnV)
+    loop([sun, earth, mars, venus, mercury],saturnV,mars)
 
 
 if __name__ == '__main__':          # The code starts here
