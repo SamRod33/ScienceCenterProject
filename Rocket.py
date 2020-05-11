@@ -274,23 +274,23 @@ class Rocket:
         #
         # animation = FuncAnimation(f, func=animate, frames=len(s), interval=10)
         # Set up subplots
-        f, axs = plt.subplots(nrows=3, ncols=2, sharex=True, figsize=(14,9))
+        f, axs = plt.subplots(nrows=3, ncols=1, sharex=True, figsize=(14,9))
         f.tight_layout(pad=3.0)
         f.set_facecolor('w')
 
         # Set up common axis and title names
-        f.text(0.5, 0.02, 'Time After Launch [sec.]', ha='center', fontsize=14)
-        f.text(0.5, 0.96, 'Modeling a Rocket Launch', ha='center', fontsize=16)
+        f.text(0.5, 0.02, 'Time During Docking [sec.]', ha='center', fontsize=14)
+        f.text(0.5, 0.96, 'Rocket Docking Model', ha='center', fontsize=16)
 
         # Set up individual axis titles
-        axs[0,0].set_ylabel('Altitude [km]')
-        axs[0,0].set_title('Position vs. Time')
+        axs[0].set_ylabel('Altitude [km]')
+        axs[0].set_title('Position vs. Time')
 
-        axs[1,0].set_ylabel('Velocity [km/s]')
-        axs[1,0].set_title('Velocity vs. Time')
+        axs[1].set_ylabel('Velocity [km/s]')
+        axs[1].set_title('Velocity vs. Time')
 
-        axs[2,0].set_ylabel('G Force')
-        axs[2,0].set_title('Acceleration vs. Time')
+        axs[2].set_ylabel('G Force')
+        axs[2].set_title('Acceleration vs. Time')
 
 
         # Remove trailing 0s if rocket reached terminal velocity by tmax
@@ -302,7 +302,7 @@ class Rocket:
         gs = self.calculate_g(a)
 
         # Combine data from launch into only a few variables
-        axes = [axs[0,0], axs[1,0], axs[2,0]]
+        axes = [axs[0], axs[1], axs[2]]
         data = [s, v, a]
         scale_factors = [1000, 1000, 1]
         colors = ['b', 'g', 'r']
