@@ -7,7 +7,6 @@ from matplotlib.animation import FuncAnimation
 
 class Rocket:
 
-
     def __init__(self, x=0, y=0, v=0, a=0, thrust = 1, fuel=MASS_FUEL, mass=MASS_ROCKET):
         """
         Returns: None
@@ -28,45 +27,6 @@ class Rocket:
         self.thrust =thrust
         self.fuel = fuel
         self.mass = mass
-
-    def launch(self, tmax, dt, altitude):
-        """
-        Launches the rocket and outputs graph of simulated trajectory
-
-        Parameters
-        ----------
-        tmax : int
-            the maximum number of time steps the run the simulation for
-        dt : int
-            the time between each time step
-        """
-
-        x = [self.x]
-        y = [self.y]
-        v = [self.v]
-        a = [self.a]
-        fuel = [self.fuel]
-        mass = [self.mass]
-
-        launch_fuel = self.fuel  # calculate what percent of total fuel used for launch
-        consume_fuel = 100
-
-        for nt in np.arange(dt, tmax, dt):
-            if self.getFuel() >= 0:
-                self.setFuel(self.getFuel()-consume_fuel)
-            if self.getFuel() - consume_fuel <= 0:
-                self.setThrust(0)
-                self.setFuel(0)
-
-            force = self.getThrust() + self.wind(y[nt-1]) - self.gravity_force(y[nt-1]) + self.drag(y[nt-1])
-            a.append(a[nt-1]+(force / (self.mass + self.getFuel())))
-            v.append(a[nt-1]*dt + v[nt-1])
-            y.append(0.5*a[nt-1]*dt**2 + v[nt-1]*dt + y[nt-1])
-            if y[nt] < 0:
-                break
-
-        self.visualize(y, v, a, nt, dt)
-
 
     def setX(self, x):
         """
@@ -236,46 +196,6 @@ class Rocket:
         dt : int
             the time between each time step
         """
-        # f, (ax1, ax2, ax3) = plt.subplots(3, sharex=True, figsize=(8,8))
-        # f.tight_layout(pad=3.0)
-        # x = np.arange(0,nt+dt,dt)
-        #
-        # x_data = []
-        # y_data = []
-        # v_data = []
-        # a_data = []
-        #
-        #
-        # pos, = ax1.plot(x, s, 'b')
-        # ax1.set_ylabel('Altitude')
-        # ax1.set_title('Position vs. Time of Rocket Launch')
-        #
-        # vel, = ax2.plot(x, v, 'g')
-        # ax2.set_ylabel('Velocity')
-        # ax2.set_title('Velocity vs. Time of Rocket Launch')
-        #
-        # accel, = ax3.plot(x, a, 'r')
-        # ax3.set_ylabel('Acceleration')
-        # ax3.set_xlabel('Time (sec.)')
-        # ax3.set_title('Acceleration vs. Time of Rocket Launch')
-        #
-        # def animate(i):
-        #     x_data.append(x[i])
-        #     y_data.append(s[i])
-        #     v_data.append(v[i])
-        #     a_data.append(a[i])
-        #
-        #     pos.set_xdata(x_data)
-        #     pos.set_ydata(y_data)
-        #
-        #     vel.set_xdata(x_data)
-        #     vel.set_ydata(v_data)
-        #
-        #     accel.set_xdata(x_data)
-        #     accel.set_ydata(a_data)
-        #
-        #
-        # animation = FuncAnimation(f, func=animate, frames=len(s), interval=10)
         # Set up subplots
         f, axs = plt.subplots(nrows=3, ncols=1, sharex=True, figsize=(14,9))
         f.tight_layout(pad=3.0)
@@ -324,5 +244,6 @@ class Rocket:
         for i in range(0, len(x)):
             for ax, d, sf, color in zip(axes, data, [1000, 1000, 1], colors):
                 ax.plot(x[:i], d[:i] / sf, color)
-            
+                
+        plt.pause(0.001)
         plt.show()
