@@ -6,7 +6,6 @@ Date: 04/15/20
 """
 
 import turtle
-import launch
 import math
 from constants import *
 from turtle import *
@@ -196,7 +195,7 @@ class spaceship(planet):
 def loop(system, saturnV, mars):
     timestep = 1*24*3600
     elapsedRuns = 0
-    while enroute(saturnV, mars) and not offScreen(saturnV) and elapsedRuns < 500:      #stop the simulation if the spaceship reaches Mars, if the spaceship goes too far off screen, or if the simulation takes too long
+    while enroute(saturnV, mars) and not offScreen(saturnV) and elapsedRuns < 2000:      #stop the simulation if the spaceship reaches Mars, if the spaceship goes too far off screen, or if the simulation takes too long
         saturnV.goto(saturnV.xloc*SCALE, saturnV.yloc*SCALE)
         saturnV.pendown()
         total_fx = total_fy = 0.0
