@@ -2,6 +2,7 @@ from constants import *
 import matplotlib.pyplot as plt
 import numpy as np
 import time
+import sys
 
 
 class Rocket:
@@ -16,9 +17,12 @@ class Rocket:
 
 
     def student_input(self):
-
+        """
+        This asks students to find the values of certain physical constanst
+        """
         # Instructions
         print("Please provide all values with at least 3 significant figures.")
+
         # Ask about value of G
         while True:
             G = raw_input("\nWhat is the value of the gravitational constant?\n   _____ x 10^-11 m^3 k^-1 s^-2 >>  ")
@@ -91,22 +95,20 @@ class Rocket:
 
     def launch(self, tmax, dt):
         """
-        Launches the rocket and outputs graph of simulated trajectory
+        Launches the rocket
 
         Parameters
         ----------
         tmax : int
             the maximum number of time steps the run the simulation for
-        dt : int
+        dt : float
             the time between each time step
         """
-        # self.student_input()
+        self.student_input()
 
         nt = int(tmax / dt)
         s, v, a = np.zeros(nt), np.zeros(nt), np.zeros(nt)  # Position, velocity, acceleration
         fg, fd, ft = np.zeros(nt), np.zeros(nt), np.zeros(nt)  # Force gravity, drag, thrust
-
-        launch_fuel = self.mass_fuel  # calculate what percent of total fuel used for launch
 
         for i in range(1, nt):
 
@@ -116,10 +118,12 @@ class Rocket:
             ft[i] = self.force_thrust(time=i*dt, force_gravity=fg[i], force_drag=fd[i], altitude=s[i-1])
             force = ft[i] - fg[i] - fd[i]
 
-            # consumer fuel
+            # consume fuel
             self.consume_fuel(velocity=v[i-1], net_thrust=ft[i-1]-fd[i-1], thrust=ft[i-1], dt=dt)
             if self.mass_fuel < 0:
                 crashed = True
+                print("Rocket has crashed. Mission terminated.")
+                sys.exit()
 
             # Begin pitch maneuver between in time interval [160:400] seconds
             self.tilt_maneuver(i*dt, dt)
@@ -168,7 +172,7 @@ class Rocket:
 
         Parameters
         ----------
-        altitude:
+        altitude : double
             the current height of the rocket
         """
         return GRAVITATIONAL_CONSTANT * (self.mass_rocket + self.mass_fuel) * MASS_EARTH / (RADIUS_EARTH + altitude)**2
@@ -180,9 +184,9 @@ class Rocket:
 
         Parameters
         ----------
-        altitude:
+        altitude : double
             the current altitude of the rocket
-        velocity:
+        velocity : double
             the current velocity of the rocket in m/s
         """
         return 0.5 * DRAG_COEFF * ORTH_SURFACE_AREA * self.rho(altitude) * velocity**2
@@ -264,7 +268,7 @@ class Rocket:
 
 # Launch Rocket
 rocket = Rocket()
-s, v, a, i, dt, fg, fd, ft = rocket.launch(800, 1)
+s, v, a, i, dt, fg, fd, ft = rocket.launch(800, 2)
 
 # -----------------
 #    VISUALIZE
@@ -272,7 +276,6 @@ s, v, a, i, dt, fg, fd, ft = rocket.launch(800, 1)
 
 # Set up subplots
 f, axs = plt.subplots(nrows=3, ncols=2, sharex=True, figsize=(14,9))
-f.tight_layout(pad=3.0)
 f.set_facecolor('w')
 
 # Set up common axis and title names
