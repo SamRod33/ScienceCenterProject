@@ -244,6 +244,5 @@ class Rocket:
         for i in range(0, len(x)):
             for ax, d, sf, color in zip(axes, data, [1000, 1000, 1], colors):
                 ax.plot(x[:i], d[:i] / sf, color)
-                
-        plt.pause(0.001)
+            plt.pause(0.0001)
         plt.show()
