@@ -195,7 +195,6 @@ class Rocket:
 
         Source: https://www.grc.nasa.gov/WWW/K-12/airplane/atmosmet.html
         """
-        R = 287.05  # Specific gas constant for dry RADIUS_EARTH
         if altitude > 25000:
             T = -131.21 + 0.003 * altitude
             p = 2.488 * ((T + 273.1) / 216.6)**-11.388
@@ -214,9 +213,13 @@ class Rocket:
         Parameters
         ----------
         s : list
-            the altitude of rocket at each time step
+            the acceleration of rocket at each time step
         """
-        return s
+        g_force = np.zeros(len(s))
+        for i in range(len(s)):
+            g_force[i] = s[i] / 9.8
+
+        return g_force
 
     def visualize(self, s, v, a, nt, dt):
         """
@@ -303,18 +306,23 @@ class Rocket:
 
         # Combine data from launch into only a few variables
         axes = [axs[0], axs[1], axs[2]]
-        data = [s, v, a]
+        data = [s, v, gs]
         scale_factors = [1000, 1000, 1]
         colors = ['b', 'g', 'r']
 
         # Set the x and y axis values for each subplot
         for ax, d, sf in zip(axes, data, scale_factors):
+            if axes == axs[2]:
+                break
             ax.set_ylim(0, 1.3 * np.amax(d) / sf)
             ax.set_xlim(0, np.amax(x))
+        axs[1].set_ylim(-15 , 0)
+        axs[2].set_ylim(-5, 10)
+        axs[2].set_xlim(0, np.amax(x))
 
         # Pseudo-animate the launch
         for i in range(0, len(x)):
-            for ax, d, sf, color in zip(axes, data, [1000, 1000, 1  ], colors):
+            for ax, d, sf, color in zip(axes, data, [1000, 1000, 1], colors):
                 ax.plot(x[:i], d[:i] / sf, color)
-            plt.pause(0.001)
+            
         plt.show()
